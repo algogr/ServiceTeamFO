@@ -201,7 +201,7 @@ Item {
 
                                 }
                                 Component.onCompleted: {
-                                    switch(status){
+                                    switch(ccckatastash){
                                     case 1:
                                         color="light blue"
                                         symbol.source="images/reset-icon.png"
@@ -242,11 +242,11 @@ Item {
 
                                     var entry = ticketModel.get(j);
 
-                                    var techid= entry.techid
+                                    var techid= entry.ccctexnikos
                                     var appdate=entry.lastchangedatetime
-                                    var status=entry.status
-                                    var newdate=entry.newappointmentdate
-                                    var firstappdate=entry.appointmentfrom
+                                    var status=entry.ccckatastash
+                                    var newdate=entry.cccnewappointmentdate
+                                    var firstappdate=entry.cccappointmentfrom
                                     var day=appdate.getDay()
                                     var hour=appdate.getHours()
                                     //console.log(appdate+"-"+techid+"-"+status+"-"+newdate)
@@ -298,11 +298,11 @@ Item {
                                 {
 
                                     var entry = ticketModel.get(i);
-                                    var techid= entry.techid
+                                    var techid= entry.ccctexnikos
                                     var appdate=entry.lastchangedatetime
-                                    var status=entry.status
-                                    var newdate=entry.newappointmentdate
-                                    var firstappdate=entry.appointmentfrom
+                                    var status=entry.ccckatastash
+                                    var newdate=entry.cccnewappointmentdate
+                                    var firstappdate=entry.cccappointmentfrom
                                     var day=appdate.getDay()
                                     var hour=appdate.getHours()
 

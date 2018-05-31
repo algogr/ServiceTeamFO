@@ -29,61 +29,43 @@ int main(int argc, char *argv[])
     if (!st.open(QIODevice::ReadOnly | QIODevice::Text))
     {
 
-        settings.setValue("dsnMySQL","serviceteam");
-        settings.setValue("hostnameMySQL","localhost");
-        settings.setValue("userMySQL","root");
-        settings.setValue("passMySQL","101264");
         settings.setValue("dsnSQLServer","soft1");
         settings.setValue("userSQLServer","sa");
         settings.setValue("passSQLServer","tt123!@#");
+        settings.setValue("s1Company","1002");
+        settings.setValue("s1Series","1");
         settings.sync();
     }
     st.close();
 
-    QSqlDatabase db1=QSqlDatabase::addDatabase("QODBC",settings.value("dsnMySQL").toString());
-    //QSqlDatabase db1=QSqlDatabase::addDatabase("QODBC","serviceteam");
-    db1.setDatabaseName(settings.value("dsnMySQL").toString());
-    db1.setHostName(settings.value("hostnameMySQL").toString());
-    db1.setPort(3306);
-    db1.setUserName(settings.value("userMySQL").toString());
-    db1.setPassword(settings.value("passMySQL").toString());
-
-    qDebug()<<"dsnMysql:"<<settings.value("dsnMySQL").toString();
-    qDebug()<<"hostnameMysql:"<<settings.value("hostnameMySQL").toString();
-    qDebug()<<"userMysql:"<<settings.value("userMySQL").toString();
-    qDebug()<<"passMysql:"<<settings.value("passMySQL").toString();
-
-    QSqlQuery qry(db1);
 
 
 
 
-    QSqlDatabase db2=QSqlDatabase::addDatabase("QODBC",settings.value("dsnSQLServer").toString());
 
-    db2.setDatabaseName(settings.value("dsnSQLServer").toString());
+
+    QSqlDatabase db=QSqlDatabase::addDatabase("QODBC",settings.value("dsnSQLServer").toString());
+
+    db.setDatabaseName(settings.value("dsnSQLServer").toString());
     //db2.setHostName("192.168.2.248  ");
     //db2.setPort(1433);
-    db2.setUserName(settings.value("userSQLServer").toString());
-    db2.setPassword(settings.value("passSQLServer").toString());
+    db.setUserName(settings.value("userSQLServer").toString());
+    db.setPassword(settings.value("passSQLServer").toString());
 
-    if (db1.open()==false)
+
+
+
+    if (db.open()==false)
     {
-        qDebug()<<"Error on MySQL:"<< db1.lastError().text();
+        qDebug()<<"Error on Soft1:"<< db.lastError().text();
         exit(0);
     }
 
-
-    if (db2.open()==false)
-    {
-        qDebug()<<"Error on Soft1:"<< db2.lastError().text();
-        exit(0);
-    }
-     qry.exec("SET wait_timeout = 3600");
 
     Email taskemail;
 
-    AlgoSqlTableModel* cusLModel = new AlgoSqlTableModel(0,db1);
-    cusLModel->setTable("customer");
+    AlgoSqlTableModel* cusLModel = new AlgoSqlTableModel(0,db);
+    cusLModel->setTable("cccsubscriber");
     cusLModel->sort(1,Qt::SortOrder::AscendingOrder);
     cusLModel->generateRoleNames();
     cusLModel->setFilter("");
@@ -94,32 +76,35 @@ int main(int argc, char *argv[])
 
 
 
-    AlgoSqlTableModel* origLModel = new AlgoSqlTableModel(0,db1);
+    AlgoSqlTableModel* origLModel = new AlgoSqlTableModel(0,db);
     //origLModel->setEditStrategy(QSqlTableModel::OnManualSubmit);
-    origLModel->setTable("originator");
+    origLModel->setTable("ccceteria");
     origLModel->sort(1,Qt::SortOrder::AscendingOrder);
     origLModel->generateRoleNames();
     origLModel->setFilter("");
     origLModel->select();
 
 
-    AlgoSqlTableModel* techLModel = new AlgoSqlTableModel(0,db1);
+    AlgoSqlTableModel* techLModel = new AlgoSqlTableModel(0,db);
     //origLModel->setEditStrategy(QSqlTableModel::OnManualSubmit);
-    techLModel->setTable("technician");
+    techLModel->setTable("ccctexnikos");
     techLModel->sort(1,Qt::SortOrder::AscendingOrder);
     techLModel->generateRoleNames();
     techLModel->setFilter("");
     techLModel->select();
+    qDebug()<<techLModel->roleNames();
 
-    AlgoSqlTableModel* districtLModel = new AlgoSqlTableModel(0,db1);
+
+
+    AlgoSqlTableModel* districtLModel = new AlgoSqlTableModel(0,db);
     //origLModel->setEditStrategy(QSqlTableModel::OnManualSubmit);
-    districtLModel->setTable("district");
+    districtLModel->setTable("ccctexnikos");
     districtLModel->sort(1,Qt::SortOrder::AscendingOrder);
     districtLModel->generateRoleNames();
     districtLModel->setFilter("");
     districtLModel->select();
 
-
+/*
 
     AlgoSqlTableModel* appointmentLModel = new AlgoSqlTableModel(0,db1);
     //origLModel->setEditStrategy(QSqlTableModel::OnManualSubmit);
@@ -130,63 +115,68 @@ int main(int argc, char *argv[])
     appointmentLModel->select();
 
 
+*/
 
 
 
-
-    AlgoSqlTableModel* techDistrictLModel = new AlgoSqlTableModel(0,db1);
+    AlgoSqlTableModel* techDistrictLModel = new AlgoSqlTableModel(0,db);
     //origLModel->setEditStrategy(QSqlTableModel::OnManualSubmit);
-    techDistrictLModel->setTable("techdistrict");
+    techDistrictLModel->setTable("ccctechdistrict");
     techDistrictLModel->generateRoleNames();
     techDistrictLModel->setFilter("");
     techDistrictLModel->select();
 
 
 
-    AlgoSqlTableModel* ticketLModel = new AlgoSqlTableModel(0,db1);
-    ticketLModel->setTable("ticket");
+    AlgoSqlTableModel* ticketLModel = new AlgoSqlTableModel(0,db);
+    ticketLModel->setTable("findoc");
     ticketLModel->sort(1,Qt::SortOrder::AscendingOrder);
     ticketLModel->generateRoleNames();
-    ticketLModel->setFilter("");
+    ticketLModel->setFilter("company="+settings.value("s1Company").toString()+" and sodtype=13 and series='"+settings.value("s1Series").toString()+"'");
     ticketLModel->select();
     qDebug()<<ticketLModel->roleNames();
 
-    QString querystr= "SELECT `customer`.`id` cid,\
-            `customer`.`erpid` cerpid,\
-            `customer`.`name` cname,\
-            `customer`.`location` clocation,\
-            `customer`.`city` ccity,\
-            `customer`.`county` ccounty,\
-            `customer`.`address` caddress,\
-            `customer`.`email` cemail,\
-            `customer`.`phone1` cphone1,\
-            `customer`.`phone2` cphone2,\
-            `customer`.`postalcode` cpostalcode,\
-            `customer`.`loopnumber` cloopnumber,\
-            `customer`.`longitude` clongtitude,\
-            `customer`.`latitude` clatitude,\
-            `ticket`.`originatorid` toriginatorid,\
-            `ticket`.`erporiginatorid` terporiginatorid,\
-            `ticket`.`erpcusid` terpcusid,\
-            `ticket`.`title` ttitle,\
-            `ticket`.`service` tservice,\
-            `ticket`.`reporteddate` treporteddate,\
-            `ticket`.`priority` tpriority,\
-            `ticket`.`description` tdescription,\
-            `ticket`.`customerticketno` tcustomerticketno,\
-            `ticket`.`appointmentfrom` tappointmentfrom,\
-            `ticket`.`appointmetto` tappointmentto,\
-            `ticket`.`incident` tincident,\
-            `ticket`.`department` tdepartment,\
-            `ticket`.`status` tstatus,\
-            `ticket`.`techid` ttechid,\
-            `ticket`.`id` tid,\
-            `ticket`.`newappointmentdate` tnewappointmentdate,\
-            `originator`.`name` oname\
-            FROM `serviceteam`.`ticket`,`serviceteam`.`customer`,`serviceteam`.`originator`\
-            where `ticket`.`cusid`=`customer`.`id` and `ticket`.`originatorid`=`originator`.`id`\
-            and `ticket`.`status`=1 and `originator`.`name` like '%'";
-    AlgoSqlQueryModel* custTicketLModel=new AlgoSqlQueryModel(&db1,querystr);
+
+
+
+
+    QString querystr= "SELECT c.cccsubscriber cid,\
+            0 cerpid,\
+            c.name cname,\
+            c.cccperioxi clocation,\
+            c.city ccity,\
+            c.cccnomos ccounty,\
+            c.address caddress,\
+            '' cemail,\
+            c.phone01 cphone1,\
+            c.phone02 cphone2,\
+            c.cccpostalcode cpostalcode,\
+            c.cccdbf cloopnumber,\
+            c.longitude clongtitude,\
+            c.latitude clatitude,\
+            f.ccceteria toriginatorid,\
+            0 terporiginatorid,\
+            0 terpcusid,\
+            f.cccergasia ttitle,\
+            '' tservice,\
+            f.cccreporteddate treporteddate,\
+            f.cccpriority tpriority,\
+            f.cccdescription tdescription,\
+            f.cccticket tcustomerticketno,\
+            f.cccappointmentfrom tappointmentfrom,\
+            '' tappointmentto,\
+            f.fincode tincident,\
+            '' tdepartment,\
+            f.ccckatastash tstatus,\
+            f.ccctexnikos ttechid,\
+            f.findoc tid,\
+            f.cccnewappointmentdate tnewappointmentdate,\
+            o.name oname\
+            FROM findoc f,cccsubscriber c,ccceteria o\
+            where f.cccsubscriber=c.cccsubscriber and f.ccceteria=o.ccceteria\
+            and f.ccckatastash=1 and o.name like '%'";
+
+    AlgoSqlQueryModel* custTicketLModel=new AlgoSqlQueryModel(&db,querystr);
 
 
 
@@ -213,11 +203,14 @@ int main(int argc, char *argv[])
 
 
 
-    querystr= "select t.id tid,t.incident tincident,c.name cname,t.appointmentfrom tappointmentfrom,t.status tstatus,tc.name tcname,\
-            o.name oname,t.version tversion,t.techid ttechid from ticket t,originator o,customer c,technician tc where t.originatorid=o.id and t.cusid=c.id\
-             and t.techid=tc.id";
+    querystr= "select t.findoc tid,t.fincode tincident,c.name cname,\
+            t.cccappointmentfrom tappointmentfrom,t.ccckatastash tstatus,tc.name tcname,\
+            o.name oname,t.cccversion tversion,t.ccctexnikos ttechid from findoc t,ccceteria o\
+            ,cccsubscriber c,ccctexnikos tc where t.ccceteria=o.ccceteria \
+            and t.cccsubscriber=c.cccsubscriber\
+             and t.ccctexnikos=tc.ccctexnikos";
 
-    AlgoSqlQueryModel* techTicketLModel=new AlgoSqlQueryModel(&db1,querystr);
+    AlgoSqlQueryModel* techTicketLModel=new AlgoSqlQueryModel(&db,querystr);
 
     techTicketLModel->setQuery();
             nbCols = techTicketLModel->columnCount();
@@ -229,39 +222,37 @@ int main(int argc, char *argv[])
 
     techTicketLModel->generateRoleNames();
     qDebug()<<techTicketLModel->roleNames();
+/*
 
-
-    QString querystr1="SELECT `customer`.`id` cid,\
-            `customer`.`erpid` cerpid,\
-            `customer`.`name` cname,\
-            `customer`.`location` clocation,\
-            `customer`.`city` ccity,\
-            `customer`.`county` ccounty,\
-            `customer`.`address` caddress,\
-            `customer`.`email` cemail,\
-            `customer`.`phone1` cphone1,\
-            `customer`.`phone2` cphone2,\
-            `customer`.`postalcode` cpostalcode,\
-            `customer`.`loopnumber` cloopnumber,\
-            `customer`.`longitude` clongtitude,\
-            `customer`.`latitude` clatitude,\
-            `ticket`.`originatorid` toriginatorid,\
-            `ticket`.`erporiginatorid` terporiginatorid,\
-            `ticket`.`erpcusid` terpcusid,\
-            `ticket`.`title` ttitle,\
-            `ticket`.`service` tservice,\
-            `ticket`.`reporteddate` treporteddate,\
-            `ticket`.`priority` tpriority,\
-            `ticket`.`description` tdescription,\
-            `ticket`.`customerticketno` tcustomerticketno,\
-            `ticket`.`appointmentfrom` tappointmentfrom,\
-            `ticket`.`appointmetto` tappointmentto,\
-            `ticket`.`incident` tincident,\
-            `ticket`.`department` tdepartment,\
-            `ticket`.`id` tid,\
-            `originator`.`name` oname,\
-            `appointment`.`appdate` appdate,\
-            `appointment`.`techid` atechid\
+    QString querystr1="SELECT c.cccsubscriber cid,\
+            0 cerpid,\
+            c.name cname,\
+            c.cccperioxi clocation,\
+            c.city ccity,\
+            c.cccnomos ccounty,\
+            c.address` cddress,\
+            '' cemail,\
+            c.phone01 cphone1,\
+            cphone02 cphone2,\
+            c.cccpostalcode cpostalcode,\
+            c.cccdbf cloopnumber,\
+            c.longitude clongtitude,\
+            clatitude clatitude,\
+            t.ccceteria toriginatorid,\
+            0 terporiginatorid,\
+            0 terpcusid,\
+            t.cccergasia ttitle,\
+            '' tservice,\
+            t.cccreporteddate treporteddate,\
+            t.cccpriority tpriority,\
+            t.cccdescription tdescription,\
+            t.cccticket tcustomerticketno,\
+            t.cccappointmentfrom tappointmentfrom,\
+            '' tappointmentto,\
+            t.fincode tincident,\
+            '' tdepartment,\
+            t.findoc tid,\
+            oname oname,\
             FROM `serviceteam`.`ticket`,`serviceteam`.`customer`,`serviceteam`.`originator`,`serviceteam`.`appointment`\
             where `ticket`.`cusid`=`customer`.`id` and `ticket`.`originatorid`=`originator`.`id` and `ticket`.`id`=`appointment`.`ticketid` \
             and `ticket`.`status`=1 ";
@@ -282,15 +273,15 @@ int main(int argc, char *argv[])
     appCustTicketLModel->generateRoleNames();
     qDebug()<<appCustTicketLModel->roleNames();
     qDebug()<<appCustTicketLModel->rowCount();
-
-    querystr1="SELECT td.id tdid,d.description ddescription,td.techid tdtechid,td.refdate tdrefdate from district d inner join\
-    techdistrict td on d.id=td.districtid inner join technician t on t.id=td.techid";
-
-
+*/
+    QString querystr1="SELECT ccctechdistrict tdid,d.name ddescription,td.techid tdtechid,td.refdate tdrefdate from ccctexnikos d inner join\
+    ccctechdistrict td on d.ccctexnikos=td.districtid";
 
 
 
-    AlgoSqlQueryModel* techDistrictQLModel=new AlgoSqlQueryModel(&db1,querystr1);
+
+
+    AlgoSqlQueryModel* techDistrictQLModel=new AlgoSqlQueryModel(&db,querystr1);
 
 
     techDistrictQLModel->setQuery();
@@ -330,10 +321,10 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("techTicketModel",techTicketLModel);
     engine.rootContext()->setContextProperty("techModel",techLModel);
     engine.rootContext()->setContextProperty("districtModel",districtLModel);
-    engine.rootContext()->setContextProperty("appointmentModel",appointmentLModel);
+    //engine.rootContext()->setContextProperty("appointmentModel",appointmentLModel);
     engine.rootContext()->setContextProperty("techDistrictQModel",techDistrictQLModel);
     engine.rootContext()->setContextProperty("techDistrictModel",techDistrictLModel);
-    engine.rootContext()->setContextProperty("appCustomerTicketModel",appCustTicketLModel);
+    //engine.rootContext()->setContextProperty("appCustomerTicketModel",appCustTicketLModel);
     engine.rootContext()->setContextProperty("taskEmail",&taskemail);
     engine.rootContext()->setContextProperty("ve",ve);
     engine.load(QUrl(QLatin1String("qrc:/main.qml")));
