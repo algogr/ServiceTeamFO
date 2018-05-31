@@ -1,9 +1,37 @@
-<!DOCTYPE RCC>
-<RCC version="1.0">
+<RCC>
     <qresource prefix="/">
         <file>main.qml</file>
         <file>Page1.qml</file>
         <file>Page1Form.ui.qml</file>
         <file>qtquickcontrols2.conf</file>
+        <file>TicketListSectionDelegate.qml</file>
+        <file>TicketList.qml</file>
+        <file>TechList.qml</file>
+        <file>TechListDelegate.qml</file>
+        <file>TicketListDelegate.qml</file>
+        <file>AppTicketListDelegate.qml</file>
+        <file>TechListDelegateFlickable.qml</file>
+        <file>Test.qml</file>
+        <file>images/drawer.png</file>
+        <file>images/menu.png</file>
+        <file>images/back.png</file>
+        <file>DailyProgramList.qml</file>
+        <file>DailyProgramListDelegate.qml</file>
+        <file>Page2.qml</file>
+        <file>TodayProgramList.qml</file>
+        <file>TodayProgramListDelegate.qml</file>
+        <file>Settings.qml</file>
+        <file>images/btnok.png</file>
+        <file>images/cancel.png</file>
+        <file>TechDistrict.qml</file>
+        <file>MyCalendar.qml</file>
+        <file>TickeListPage.qml</file>
+        <file>TicketListPageLeft.qml</file>
+        <file>TicketListPageRight.qml</file>
+        <file>images/check.png</file>
+        <file>images/black-x-png-27.png</file>
+        <file>images/reset-icon.png</file>
+        <file>Technician.qml</file>
+        <file>VisitReport.qml</file>
     </qresource>
 </RCC>
